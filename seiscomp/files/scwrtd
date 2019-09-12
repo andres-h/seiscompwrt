@@ -1,0 +1,161 @@
+#!/usr/bin/lua
+
+-- (C) 2019 Andres Heinloo, Helmholtz-Zentrum Potsdam - Deutsches GeoForschungsZentrum GFZ
+
+local SCDIR = "/opt/seiscomp/"
+local ETC = SCDIR .. "etc/"
+local RC  = SCDIR .. "var/lib/rc/"
+local BIN = SCDIR .. "bin/"
+
+local uci = require "uci"
+local nixio = require "nixio"
+
+local g = uci.cursor():get_all("seiscomp", "seedlink")
+
+if not g then
+	error("missing seedlink config")
+end
+
+if not g.network then
+	error("missing network code")
+end
+
+if not g.station then
+	error("missing station code")
+end
+
+os.execute("mkdir -p " .. ETC .. "key/seedlink " .. ETC .. "key/slarchive " .. RC)
+
+local function ck(k)
+	return k:gsub("__", ".")
+end
+
+local function cv(v)
+	if type(v) == "table" then
+		local t = {}
+
+		for _, item in ipairs(v) do
+			table.insert(t, string.format("%q", item))
+		end
+
+		return table.concat(t, ", ")
+
+	else
+		return string.format("%q", v)
+
+	end
+end
+
+local f = assert(io.open(ETC .. "seedlink.cfg", "w"))
+
+for k, v in pairs(g) do
+	if k:sub(1, 1) ~= "." then
+		f:write(ck(k) .. " = " .. cv(v) .. "\n")
+	end
+end
+
+f:close()
+
+local f = assert(io.open(RC .. "station_" .. g.network .. "_" .. g.station, "w"))
+f:write("description = " .. cv(g.description or "SeiscompWrt") .. "\n")
+f:close()
+
+local f = assert(io.open(ETC .. "global.cfg", "w"))
+f:write("organization = " .. cv(g.description or "SeiscompWrt") .. "\n")
+f:close()
+
+local f = assert(io.open(ETC .. "kernel.cfg", "w"))
+f:write("syslog = " .. cv(g.syslog or "false") .. "\n")
+f:close()
+
+local bindings = {}
+local names = {}
+
+uci.cursor():foreach("seiscomp", "source", function(s)
+	if not s.enabled or s.enabled == "1" then
+		bindings[s[".name"]] = s
+		table.insert(names, s[".name"] .. ":" .. s[".name"]:gsub("_[^_]*$", ""))
+	end
+end)
+
+local f = assert(io.open(ETC .. "key/seedlink/profile_default", "w"))
+f:write("sources = " .. table.concat(names, ", ") .. "\n")
+
+for name, param in pairs(bindings) do
+	for k, v in pairs(param) do
+		if k:sub(1, 1) ~= "." and k ~= "enabled" then
+			f:write("sources" .. "." .. name .. "." .. ck(k) .. " = " .. cv(v) .. "\n")
+		end
+	end
+end
+
+f:close()
+
+local archive = assert(uci.cursor():get_all("seiscomp", "archive"))
+
+local f = assert(io.open(ETC .. "slarchive.cfg", "w"))
+f:write("archive = " .. string.format("%q", archive.path or "/data/archive") .. "\n")
+f:close()
+
+local f = assert(io.open(ETC .. "key/slarchive/profile_default", "w"))
+
+for k, v in pairs(archive) do
+	if k:sub(1, 1) == "." then
+		-- do nothing
+
+	elseif k == "enabled" then
+		-- do nothing
+
+	elseif k == "path" then
+		-- do nothing
+
+	elseif k == "selectors" and type(v) == "table" then
+		f:write(k .. " = " .. string.format("%q", table.concat(v, " ")) .. "\n")
+
+	else
+		f:write(ck(k) .. " = " .. cv(v) .. "\n")
+
+	end
+end
+
+f:close()
+
+os.execute("rm -f " .. ETC .. "key/station_*")
+
+local f = assert(io.open(ETC .. "key/station_" .. g.network .. "_" .. g.station, "w"))
+
+if g.enabled == "1" then
+	f:write("seedlink:default\n")
+	os.execute(BIN .. "seiscomp --asroot enable seedlink")
+
+	if archive.enabled == "1" then
+		f:write("slarchive:default\n")
+		os.execute(BIN .. "seiscomp --asroot enable slarchive")
+
+	else
+		os.execute(BIN .. "seiscomp --asroot disable slarchive")
+
+	end
+
+else
+	os.execute(BIN .. "seiscomp --asroot disable seedlink")
+	os.execute(BIN .. "seiscomp --asroot disable slarchive")
+end
+
+f:close()
+
+os.execute(BIN .. "seiscomp --asroot stop")
+os.execute(BIN .. "seiscomp --asroot update-config")
+
+if g.enabled == "1" then
+	os.execute(BIN .. "seiscomp --asroot start")
+end
+
+while true do
+	nixio.nanosleep(60)
+
+	if g.enabled == "1" then
+		os.execute(BIN .. "seiscomp --asroot check | grep -v 'already running'")
+	end
+end
+

@@ -1,0 +1,43 @@
+<%# (C) 2019 Andres Heinloo, Helmholtz-Zentrum Potsdam - Deutsches GeoForschungsZentrum GFZ -%>
+
+<%+header%>
+
+<h2 name="content">SeedLink</h2>
+
+<h3>Live</h3>
+
+<div id="slplot">
+	<div id="waitingdata">Waiting for data...</div>
+</div>
+
+<style>
+div.sltrace {
+	height: 300px;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
+<script src="/luci-static/resources/view/seiscomp/seisplotjs_waveformplot.js"></script>
+<script src="/luci-static/resources/view/seiscomp/seedlinkplot.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+document.addEventListener("DOMContentLoaded", function() {
+	var plot = new SeedlinkPlot(true, 300, 1)
+
+	<%
+	local uci = require "luci.model.uci"
+
+	uci.cursor():foreach("seiscomp", "stream", function(s)
+		if (not s.hidden or s.hidden == "0") and (s.live == "1") then
+			write(string.format("plot.add(%q, %q, %q, %q);", s[".name"], s.description, s.unit, s.conversion))
+		end
+	end)
+	%>
+
+	plot.run()
+})
+//]]>
+</script>
+
+<%+footer%>
+

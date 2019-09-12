@@ -1,0 +1,10 @@
+--- a/src/seedlink/plugins/CMakeLists.txt
++++ b/src/seedlink/plugins/CMakeLists.txt
+@@ -10,7 +10,6 @@ IF ( NOT MACOSX )
+ 	SET(
+ 		_DIR_LIST 
+ 			${_DIR_LIST}
+-			caps_plugin
+ 			echopro_plugin
+ 			ewexport_plugin
+ 			ewexport_pasv_plugin
