@@ -17,7 +17,7 @@ local function sourcetypes()
 	end
 
 	for fname in iter do
-		local name = fname:match("^seedlink_([^/.]*)\.xml$")
+		local name = fname:match("^seedlink_([^/.]*)%.xml$")
 
 		if name ~= nil then
 			local el = {"seiscomp", "binding", "description"}
@@ -66,7 +66,7 @@ local function sourcetypes()
 	return t
 end
 
-local function descread(fname, mtype)
+local function params(fname, mtype)
 	local t = {}
 	local el = {"seiscomp", mtype, "configuration", "parameter", "description"}
 	local n = 1
@@ -150,7 +150,7 @@ local function procs(srctype)
 	end
 
 	for f in iter do
-		local name = f:match("^streams_([^/.]*)\.tpl$")
+		local name = f:match("^streams_([^/.]*)%.tpl$")
 
 		if name ~= nil then
 			table.insert(t, {
@@ -169,9 +169,9 @@ local function fillsection(s, mtype, module, submodule)
 	local t
 
 	if submodule then
-		t = descread(module .. "_" .. submodule .. ".xml", mtype)
+		t = params(module .. "_" .. submodule .. ".xml", mtype)
 	else
-		t = descread(module .. ".xml", mtype)
+		t = params(module .. ".xml", mtype)
 	end
 
 	for _, v in ipairs(t) do
