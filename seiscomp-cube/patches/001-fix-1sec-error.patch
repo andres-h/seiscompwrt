@@ -1,0 +1,22 @@
+diff --git a/app.cpp b/app.cpp
+index 8414b8c..935ce9a 100644
+--- a/app.cpp
++++ b/app.cpp
+@@ -59,7 +59,7 @@ using namespace CPPStreams;
+ using namespace Utilities;
+ 
+ 
+-#define VERSION "2016.343"
++#define VERSION "2017.306"
+ 
+ #ifndef SEEDLINK_CONFIG_FILE
+ #define SEEDLINK_CONFIG_FILE "sampleconfig/plugins.ini"
+@@ -1053,7 +1053,7 @@ void App::setPPSid() {
+ 			if ( stream == NULL ) continue;
+ 
+ 			// derive expected packet start time from current GPS time
+-			Cube::Time expectedStartTime = correctedTime(_gps._currentGPS.time.t) - Cube::TimeSpan(1,0);
++			Cube::Time expectedStartTime = correctedTime(_gps._currentGPS.time.t);
+ 
+ 			Cube::TimeSpan diff = expectedStartTime - stream->startTime ;
+ 			if ( abs(diff.seconds()) > 0 || (abs(diff.microseconds()) > _maxJitter) ) {

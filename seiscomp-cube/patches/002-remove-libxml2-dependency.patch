@@ -1,0 +1,36 @@
+--- a/3rd-party/CMakeLists.txt
++++ b/3rd-party/CMakeLists.txt
+@@ -1,7 +1,5 @@
+ # search flex
+ 
+-FIND_PACKAGE(LibXml2 REQUIRED)
+-
+ MACRO(FIND_FLEX)
+     IF(NOT FLEX_EXECUTABLE)
+         FIND_PROGRAM(FLEX_EXECUTABLE flex)
+--- a/3rd-party/slutils/CMakeLists.txt
++++ b/3rd-party/slutils/CMakeLists.txt
+@@ -8,7 +8,6 @@
+ 	confattr.h
+ 	confbase.h
+ 	conf_ini.h
+-	conf_xml.h
+ 	cppstreams.h
+ 	descriptor.h
+ 	diag.h
+@@ -17,7 +16,6 @@
+ 
+ SET(SLUTILS_SOURCES
+ 	utils.cc
+-	conf_xml.cc
+ 	confbase.cc
+ )
+ 
+@@ -25,7 +23,6 @@
+ 	REMOVE_DEFINITIONS(-pedantic)
+ ENDIF (CMAKE_COMPILER_IS_GNUCC)
+ 
+-INCLUDE_DIRECTORIES(${LIBXML2_INCLUDE_DIR})
+ INCLUDE_DIRECTORIES(.)
+ 
+ ADD_FLEX_FILES(SLUTILS_SOURCES conf_ini.l)

@@ -14,7 +14,6 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_LICENSE:=GPL-2.0+, SeisComP Public License
 PKG_LICENSE_FILES:=COPYING
 PKG_MAINTAINER:=Andres Heinloo <andres@gfz-potsdam.de>
-PKG_BUILD_DEPENDS:=+python-base
 
 CMAKE_INSTALL:=1
 

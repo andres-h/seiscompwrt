@@ -1,0 +1,40 @@
+--- a/app.cpp
++++ b/app.cpp
+@@ -340,7 +340,7 @@
+ 
+ };
+ 
+-#if defined(__GNU_LIBRARY__) || defined(__GLIBC__)
++#if defined(__GNU_LIBRARY__) || defined(__GLIBC__) || 1
+ const char *const opterr_message = "Try `%s --help' for more information\n";
+ const char *const help_message =
+ 		"Usage: %s [options] plugin_name\n"
+@@ -576,7 +576,7 @@
+ }
+ 
+ bool App::parseCommandLine() {
+-#if defined(__GNU_LIBRARY__) || defined(__GLIBC__)
++#if defined(__GNU_LIBRARY__) || defined(__GLIBC__) || 1
+ 	struct option ops[] = {
+ 	{ "verbosity",        required_argument, NULL, 'X' },
+ 	{ "daemon",           no_argument,       NULL, 'D' },
+@@ -601,7 +601,7 @@
+ 	verbosity = 0;
+ 
+ 	int c;
+-#if defined(__GNU_LIBRARY__) || defined(__GLIBC__)
++#if defined(__GNU_LIBRARY__) || defined(__GLIBC__) || 1
+ 	while((c = getopt_long(_argc, _argv, "vc:d:De:f:i:m:t:s:SVhw", ops, NULL)) != EOF)
+ #else
+ 	while((c = getopt(_argc, _argv, "vc:d:De:f:i:m:t:s:SVhw")) != EOF)
+--- a/app.h
++++ b/app.h
+@@ -13,7 +13,7 @@
+ #include "mseed/encoder.h"
+ 
+ 
+-#if defined(__GNU_LIBRARY__) || defined(__GLIBC__)
++#if defined(__GNU_LIBRARY__) || defined(__GLIBC__) || 1
+ #include <getopt.h>
+ #endif
+ 

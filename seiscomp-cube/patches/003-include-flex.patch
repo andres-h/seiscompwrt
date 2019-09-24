@@ -1,0 +1,7 @@
+--- a/3rd-party/slutils/CMakeLists.txt
++++ b/3rd-party/slutils/CMakeLists.txt
+@@ -1,4 +1,3 @@
+-INCLUDE(flex)
+ FIND_FLEX()
+ 
+ SET(SLUTILS_HEADERS
