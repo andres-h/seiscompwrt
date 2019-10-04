@@ -6,9 +6,10 @@ local fs = require "nixio.fs"
 local function status()
 	local t = {}
 
-	uci.cursor():foreach("seiscomp", "gpio", function(s)
+	uci.cursor():foreach("scgpio", "gpio", function(s)
 		if s.type ~= "switch" and s.type ~= "trigger" and s.type ~= "input" then
-			return nil, "invalid GPIO"
+			io.stderr:write(s[".name"] .. ": invalid type \"" .. s.type .. "\"\n")
+			return
 		end
 
 		local item = {
@@ -40,7 +41,7 @@ local function status()
 end
 
 local function set(name, value)
-	local s = uci.cursor():get_all("seiscomp", name)
+	local s = uci.cursor():get_all("scgpio", name)
 
 	if s.type ~= "switch" and s.type ~= "trigger" then
 		return nil, "invalid GPIO"

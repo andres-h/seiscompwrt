@@ -1,0 +1,175 @@
+#!/usr/bin/lua
+
+-- (C) 2019 Andres Heinloo, Helmholtz-Zentrum Potsdam - Deutsches GeoForschungsZentrum GFZ
+
+local HANDLER_DIR = "/opt/seiscomp/share/gpio/"
+
+local uci = require "uci"
+local nixio = require "nixio"
+local smtp = require "socket.smtp"
+
+local m = uci.cursor():get_all("scgpio", "monitor")
+
+if not m or not m.enabled or m.enabled == "0" then
+	-- procd restarts us if anything changes
+	while true do
+		nixio.nanosleep(60)
+	end
+end
+
+local gpio = {}
+
+uci.cursor():foreach("scgpio", "gpio", function(s)
+	if s.type ~= "input" then
+		return
+	end
+
+	local path = "/sys/class/gpio/" .. s[".name"] .. "/value"
+	local fd, _, err = nixio.open(path)
+
+	if not fd then
+		io.stderr:write("cannot open " .. path .. ": " .. err .. "\n")
+		return
+	end
+
+	local g = {
+		name = s[".name"],
+		description = s.description or "",
+		action = s.action or {},
+		action_interval = tonumber(s.action_interval) or 600,
+		on_message = s.on_message,
+		off_message = s.off_message,
+		fd = fd,
+		events = nixio.poll_flags("pri"),
+		state = 0,
+		flips = 0,
+		flips_time = 0,
+		action_time = 0
+	}
+
+	table.insert(gpio, g)
+end)
+
+local function send_mail(addr, msg)
+	if not m.smtp_server then
+		io.stderr:write("SMTP server is not configured\n")
+		return
+	end
+
+	local server, port = m.smtp_server:match("^([%w%-%.]*):?([0-9]*)$")
+
+	if port == "" then
+		port = 25
+	else
+		port = tonumber(port)
+	end
+
+	if not server or not port then
+		io.stderr:write("invalid SMTP server \"" .. m.smtp_server .. "\"\n")
+		return
+	end
+
+	local msgt = {
+		headers = {
+			from = m.smtp_sender,
+			to = addr,
+			subject = msg
+		},
+		body = msg
+	}
+
+	local res, err = smtp.send{
+		server = server,
+		port = port,
+		user = m.smtp_user,
+		password = m.smtp_password,
+		from = m.smtp_sender,
+		rcpt = addr,
+		source = smtp.message(msgt)
+	}
+
+	if not res then
+		io.stderr:write(err .. "\n")
+	end
+end
+
+local function send_sms(addr, msg)
+	os.execute(string.format("sendsms %q %q", addr, msg))
+end
+
+local function action(method, arg, msg)
+	print(string.format("%s %q %q", method, arg, msg))
+
+	if method == "mail" then
+		send_mail(arg, msg)
+	
+	elseif method == "sms" then
+		send_sms(arg, msg)
+	
+	else
+		os.execute(string.format("%q %q %q", HANDLER_DIR .. method, arg, msg))
+	end
+end
+
+local function do_actions(g, delay)
+	if not g.action then
+		return
+	end
+
+	for _, a in ipairs(g.action) do
+		local method, arg = a:match("^(.-):%s*(.-)%s*$")
+
+		if method then
+			local msg
+
+			if g.state == 0 then
+				msg = g.off_message or "[OFF] " .. g.description
+
+			elseif g.state == 1 then
+				msg = g.on_message or "[ON] " .. g.description
+
+			else
+				msg = "[INVALID] " .. g.description
+			end
+
+			if delay > 0 or g.flips > 1 then
+				msg = msg .. string.format(" (%d flips in %ds)", g.flips, delay)
+			end
+
+			action(method, arg, msg)
+
+		else
+			io.stderr:write("invalid action \"" .. a .. "\"\n")
+		end
+	end
+end
+
+while true do
+	nixio.poll(gpio, 10000)
+
+	local curtime = os.time()
+
+	for _, g in ipairs(gpio) do
+		-- ignore g.revents, because not all gpios support interrupts
+
+		value = tonumber(g.fd:read(10)) or -1
+		g.fd:seek(0, "set")
+
+		if value ~= g.state then
+			g.state = value
+			g.flips = g.flips + 1
+
+			if g.flips == 1 then
+				g.flips_time = curtime
+			end
+		end
+
+		if g.flips >= 1 and os.difftime(curtime, g.action_time) >= g.action_interval then
+			do_actions(g, os.difftime(curtime, g.flips_time))
+			g.flips = 0
+			g.flips_time = 0
+			g.action_time = curtime
+		end
+	end
+end
+

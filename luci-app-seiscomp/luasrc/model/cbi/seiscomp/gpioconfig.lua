@@ -3,7 +3,7 @@
 local dsp = require "luci.dispatcher"
 local gpio = arg[1] or ""
 
-local m = Map("seiscomp", "GPIO")
+local m = Map("scgpio", "GPIO")
 m.redirect = dsp.build_url("admin", "services", "gpio", "pin")
 
 local s = m:section(NamedSection, gpio, "gpio", gpio)
@@ -32,6 +32,19 @@ o.default = 1.0
 
 local o = s:option(DynamicList, "action", "action", "Action when change detected.")
 o:depends("type", "input")
+
+local o = s:option(Value, "action_interval", "action_interval", "Number of seconds to suppress repeating actions.")
+o:depends("type", "input")
+o.datatype = "range(10, 86400)"
+o.default = 600
+
+local o = s:option(Value, "on_message", "on_message", "Custom message when state changes to ON.")
+o:depends("type", "input")
+o.datatype = "rangelength(1, 100)"
+
+local o = s:option(Value, "off_message", "off_message", "Custom message when state changes to OFF.")
+o:depends("type", "input")
+o.datatype = "rangelength(1, 100)"
 
 return m
 

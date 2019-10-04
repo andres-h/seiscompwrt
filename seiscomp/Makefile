@@ -35,6 +35,8 @@ define Package/seiscomp/description
 endef
 
 define Package/seiscomp/conffiles
+/etc/config/scgpio
+/etc/config/scsms
 /etc/config/seiscomp
 endef
 
@@ -49,8 +51,12 @@ endef
 define Package/seiscomp/install
 	$(INSTALL_DIR) $(1)/opt/seiscomp $(1)/etc/init.d $(1)/etc/config
 	$(CP) $(PKG_INSTALL_DIR)/usr/* $(1)/opt/seiscomp/
+	$(INSTALL_BIN) ./files/scgpiod $(1)/opt/seiscomp/sbin/
 	$(INSTALL_BIN) ./files/scwrtd $(1)/opt/seiscomp/sbin/
+	$(INSTALL_BIN) ./files/scgpiod.init $(1)/etc/init.d/scgpiod
 	$(INSTALL_BIN) ./files/scwrtd.init $(1)/etc/init.d/scwrtd
+	$(INSTALL_CONF) ./files/scgpio.config $(1)/etc/config/scgpio
+	$(INSTALL_CONF) ./files/scsms.config $(1)/etc/config/scsms
 	$(INSTALL_CONF) ./files/seiscomp.config $(1)/etc/config/seiscomp
 endef
 

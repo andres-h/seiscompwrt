@@ -1,7 +1,7 @@
 -- (C) 2019 Andres Heinloo, Helmholtz-Zentrum Potsdam - Deutsches GeoForschungsZentrum GFZ
 
 local dsp = require "luci.dispatcher"
-local m = Map("seiscomp", "GPIO")
+local m = Map("scgpio", "GPIO")
 
 local s = m:section(TypedSection, "gpio", "Pins")
 s.addremove = true
@@ -10,12 +10,12 @@ s.template = "cbi/tblsection"
 s.extedit = dsp.build_url("admin", "services", "gpio", "pin", "%s")
 
 function s:create(section)
-	local pin = section:match("^([0-9][0-9]?)$")
+	local pin = section:match("^([0-9][0-9]?[0-9]?)$")
 	if pin then
 		section = "gpio" .. section
 
 	else
-		pin = section:match("^gpio([0-9][0-9]?)$")
+		pin = section:match("^gpio([0-9][0-9]?[0-9]?)$")
 		if not pin then
 			s.invalid_cts = true
 			return
@@ -23,7 +23,7 @@ function s:create(section)
 	end
 
 	TypedSection.create(self, section)
-	m.uci:save("seiscomp")
+	m.uci:save("scgpio")
 	luci.http.redirect(dsp.build_url("admin", "services", "gpio", "pin", section))
 end
 
