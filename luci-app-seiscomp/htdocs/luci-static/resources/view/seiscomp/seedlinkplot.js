@@ -73,7 +73,7 @@ function SeedlinkPlot(live, duration, pollInterval) {
 
 			var slData = new DataView(arraybuf, i+8, 512)
 			var rec = wp.miniseed.parseSingleDataRecord(slData)
-			var code = rec.header.chanCode
+			var code = rec.header.locCode + rec.header.chanCode
 			var reclist = bycode.get(code)
 
 			if (reclist) {
