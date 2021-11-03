@@ -14,9 +14,11 @@ o.datatype = "rangelength(1, 100)"
 
 local o = s:option(Value, "unit", "unit", "Unit.")
 o.default = "counts"
+o.datatype = "string"
 
 local o = s:option(Value, "conversion", "conversion", "Conversion formula.")
 o.default = "counts"
+o.datatype = "rangelength(1, 100)"
 
 local o = s:option(Flag, "live", "live", "Enable live seismogram.")
 o.default = o.disabled

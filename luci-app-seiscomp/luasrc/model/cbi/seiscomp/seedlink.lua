@@ -10,6 +10,7 @@ o.rmempty = false
 
 local o = s:option(Value, "description", "description", "Station description.")
 o.default = "SeiscompWrt"
+o.datatype = "rangelength(1, 100)"
 
 local o = s:option(Value, "network", "network", "Network code.")
 o.datatype = "rangelength(1, 2)"

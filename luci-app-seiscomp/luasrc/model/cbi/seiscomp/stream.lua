@@ -4,6 +4,8 @@ local dsp = require "luci.dispatcher"
 local m = Map("seiscomp", "SeedLink")
 
 local s = m:section(TypedSection, "stream", "Streams")
+s.sectionhead = "Name"
+s.add_title = "Add new stream"
 s.addremove = true
 s.sortable = true
 s.template = "cbi/tblsection"

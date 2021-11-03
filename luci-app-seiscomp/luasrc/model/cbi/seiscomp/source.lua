@@ -5,6 +5,8 @@ local sl = require "luci.tools.seiscomp.seedlink"
 local m = Map("seiscomp", "SeedLink")
 
 local s = m:section(TypedSection, "source", "Sources")
+s.sectionhead = "Source"
+s.add_title = "Add new source"
 s.addremove = true
 s.sortable = true
 s.template = "cbi/tblsection"

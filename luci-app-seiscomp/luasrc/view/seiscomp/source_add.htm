@@ -1,12 +1,31 @@
 <%# (C) 2019 Andres Heinloo, Helmholtz-Zentrum Potsdam - Deutsches GeoForschungsZentrum GFZ -%>
 
-<div class="cbi-section-create cbi-tblsection-create">
-	<select class="cbi-section-create-name" name="cbi.cts.<%=self.config%>.<%=self.sectiontype%>.select">
-		<option value="" selected="selected">-- Please choose --</option><%
-		for _, v in ipairs(self.sourcetypes) do
-			%><option value="<%=v.name%>"><%=luci.util.pcdata(v.description)%></option><%
-		end%>
-	</select>
-	<input class="cbi-button cbi-button-add" type="submit" onclick="this.form.cbi_state='add-section'; return true" value="<%:Add%>" title="<%:Add%>" />
+<h3 class="content-title note-after <%=(self.instance_description and #self.instance_description > 0) and 'hoverable' or ''%>"
+	onclick="toggleContent(this, '<%=self.config%>.<%=self.sectiontype%>.<%=self.index%>.toggle_add')">
+	<div class="toggle-arrow expanded"><img src="<%=media%>/img/icons/arrow-toggle.svg"></div>
+		<span><%=self.add_title%>
+			<% if self.instance_description and #self.instance_description > 0 then %>
+				<div class="label-info"><%=self.instance_description%></div>
+			<% end -%>
+		</span>
+</h3>
+<div id="<%=self.config%>.<%=self.sectiontype%>.<%=self.index%>.toggle_add" class="table-wrapper table-addremove toggle-content">
+	<table>
+		<tbody>
+			<tr>
+				<td class="input-cell">
+					<select class="cbi-section-create-name" name="cbi.cts.<%=self.config%>.<%=self.sectiontype%>.select">
+						<option value="" selected="selected">-- Please choose --</option><%
+						for _, v in ipairs(self.sourcetypes) do
+							%><option value="<%=v.name%>"><%=luci.util.pcdata(v.description)%></option><%
+						end%>
+					</select>
+				</td>
+				<td>
+					<input class="btn" type="submit" onclick="this.form.cbi_state='add-section'; return true" value="<%:Add%>" title="<%:Add%>" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </div>
 

@@ -179,7 +179,8 @@ local function fillsection(s, mtype, module, submodule)
 		local uciname = v.name:gsub("%.", "__")
 
 		if v.type == "list:string" then
-			s:option(cbi.DynamicList, uciname, v.name, desc)
+			local o = s:option(cbi.DynamicList, uciname, v.name, desc)
+			o.datatype = "string"
 
 		elseif v.type == "boolean" then
 			local o = s:option(cbi.Flag, uciname, v.name, desc)
@@ -201,6 +202,7 @@ local function fillsection(s, mtype, module, submodule)
 		else
 			local o = s:option(cbi.Value, uciname, v.name, desc)
 			o.default = v.default
+			o.datatype = "rangelength(1, 100)"
 
 			if v.type == "int" then
 				-- o.datatype = "integer"

@@ -10,6 +10,7 @@ o.rmempty = false
 
 local o = s:option(Value, "path", "path", "Path to waveform archive where data is stored.")
 o.default = "/data/archive"
+o.datatype = "rangelength(1, 100)"
 
 sl.fillsection(s, "binding", "slarchive")
 
