@@ -1,5 +1,5 @@
---- a/src/seedlink/apps/seedlink/config/seedlink.cfg
-+++ b/src/seedlink/apps/seedlink/config/seedlink.cfg
+--- a/src/base/seedlink/apps/seedlink/config/seedlink.cfg
++++ b/src/base/seedlink/apps/seedlink/config/seedlink.cfg
 @@ -7,7 +7,7 @@ network = XX
  port = 18000
  
@@ -9,9 +9,9 @@
  
  # List of trusted addresses.
  trusted = 127.0.0.0/8
---- a/src/seedlink/apps/seedlink/config/seedlink.py
-+++ b/src/seedlink/apps/seedlink/config/seedlink.py
-@@ -559,8 +559,8 @@ class Module(TemplateModule):
+--- a/src/base/seedlink/apps/seedlink/config/seedlink.py
++++ b/src/base/seedlink/apps/seedlink/config/seedlink.py
+@@ -565,8 +565,8 @@
          try: self._set_default("organization", self.env.getString("organization"), False)
          except: pass
  
@@ -22,8 +22,8 @@
          self._set_default("port", "18000", False)
          self._set_default("encoding", "steim2", False)
          self._set_default("trusted", "127.0.0.0/8", False)
---- a/src/seedlink/apps/seedlink/descriptions/seedlink.xml
-+++ b/src/seedlink/apps/seedlink/descriptions/seedlink.xml
+--- a/src/base/seedlink/apps/seedlink/descriptions/seedlink.xml
++++ b/src/base/seedlink/apps/seedlink/descriptions/seedlink.xml
 @@ -10,7 +10,7 @@
  					those ports must be updated as well!
  				</description>
@@ -42,8 +42,8 @@
  				<description>
  					Path to lockfile to prevent multiple instances.
  				</description>
---- a/src/seedlink/apps/seedlink/iosystem.cc
-+++ b/src/seedlink/apps/seedlink/iosystem.cc
+--- a/src/base/seedlink/apps/seedlink/iosystem.cc
++++ b/src/base/seedlink/apps/seedlink/iosystem.cc
 @@ -2483,6 +2483,21 @@ void Connection::disconnect()
      close(cx.clientfd);
    }
@@ -92,9 +92,21 @@
  
      connections.push_back(conn);
      fds.set_read(clientfd);
---- a/src/system/libs/python/seiscomp3/Kernel.py
-+++ b/src/system/libs/python/seiscomp3/Kernel.py
-@@ -186,9 +186,11 @@ class Environment(seiscomp3.Config.Config):
+--- a/src/system/libs/python/seiscomp/kernel.py
++++ b/src/system/libs/python/seiscomp/kernel.py
+@@ -79,6 +79,11 @@
+ 
+         # Create required directories
+         try:
++            os.symlink("/var", os.path.join(self.root, "var"))
++        except:
++            pass
++
++        try:
+             os.makedirs(os.path.join(self.root, "var", "log"))
+         except:
+             pass
+@@ -182,9 +187,11 @@
          return module
  
      def start(self, module, binary, params, nohup=False):

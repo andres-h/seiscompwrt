@@ -1,5 +1,5 @@
---- a/src/seedlink/plugins/CMakeLists.txt
-+++ b/src/seedlink/plugins/CMakeLists.txt
+--- a/src/base/seedlink/plugins/CMakeLists.txt
++++ b/src/base/seedlink/plugins/CMakeLists.txt
 @@ -10,7 +10,6 @@ IF ( NOT MACOSX )
  	SET(
  		_DIR_LIST 

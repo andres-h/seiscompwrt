@@ -3,19 +3,22 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seiscomp
-PKG_VERSION:=2019.277
+PKG_VERSION:=2021.332
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/andres-h/seiscomp3.git
+PKG_SOURCE_URL:=https://github.com/SeisComP/seiscomp.git
+PKG_SOURCE_URL_SEEDLINK:=https://github.com/SeisComP/seedlink.git
+PKG_SOURCE_VERSION:=5847c14174ac3556162ac334251f596bcd31b404
+PKG_SOURCE_VERSION_SEEDLINK:=052ba4cc1de60125c3df6ed0caad5ddec8e0ab4a
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=4486235150c6b2521264e5c7a9858171d08b272b
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-PKG_LICENSE:=GPL-2.0+, SeisComP Public License
+PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=COPYING
 PKG_MAINTAINER:=Andres Heinloo <andres@gfz-potsdam.de>
 
 CMAKE_INSTALL:=1
+CMAKE_BINARY_SUBDIR:=build
+PKG_USE_NINJA:=0
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -25,7 +28,7 @@ define Package/seiscomp
   CATEGORY:=Seiscomp
   TITLE:=Seiscomp acquisition module
   URL:=https://www.seiscomp3.org
-  DEPENDS:=+libstdcpp +libpthread +librt +libxml2 +python-light +python-logging +python-openssl +bash +findutils-find +lua +libuci-lua +luci-lib-nixio
+  DEPENDS:=+libstdcpp +libpthread +librt +libxml2 +libopenssl +python3-light +bash +findutils-find +lua +libuci-lua +luci-lib-nixio
 endef
 
 define Package/seiscomp/description
@@ -40,12 +43,12 @@ define Package/seiscomp/conffiles
 /etc/config/seiscomp
 endef
 
-CMAKE_OPTIONS += -DFLEX_INCLUDE_DIR=$(STAGING_DIR)/../host/include -DSC_DOC_GENERATE=OFF
+CMAKE_OPTIONS += -DFLEX_INCLUDE_DIR=$(STAGING_DIR)/../host/include -DSC_DOC_GENERATE=OFF -DSC_GLOBAL_UNITTESTS=OFF
 
-define Build/Prepare
-	$(call Build/Prepare/Default)
-	for d in $(PKG_BUILD_DIR)/src/*; do echo "$$$$d" | egrep -q "/(system|seedlink|CMakeLists\.txt)$$$$" || $(RM) -r "$$$$d"; done
-	$(CP) $(STAGING_DIR)/../host/include/FlexLexer.h $(PKG_BUILD_DIR)/src/seedlink/libs/slutils/
+define Build/Patch
+	cd $(PKG_BUILD_DIR)/src/base && git clone $(PKG_SOURCE_URL_SEEDLINK) && cd seedlink && git checkout $(PKG_SOURCE_VERSION_SEEDLINK)
+	$(CP) $(STAGING_DIR)/../host/include/FlexLexer.h $(PKG_BUILD_DIR)/src/base/seedlink/libs/slutils/
+	$(call Build/Patch/Default)
 endef
 
 define Package/seiscomp/install
