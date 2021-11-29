@@ -4,7 +4,7 @@
 	<select class="cbi-section-create-name" name="cbi.cts.<%=self.config%>.<%=self.sectiontype%>.select">
 		<option value="" selected="selected">-- Please choose --</option><%
 		for _, v in ipairs(self.sourcetypes) do
-			%><option value="<%=v.name%>"><%=luci.util.pcdata(v.description)%></option><%
+			%><option value="<%=v.name%>"><%=luci.xml.pcdata(v.description)%></option><%
 		end%>
 	</select>
 	<input class="cbi-button cbi-button-add" type="submit" onclick="this.form.cbi_state='add-section'; return true" value="<%:Add%>" title="<%:Add%>" />

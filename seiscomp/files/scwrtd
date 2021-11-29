@@ -155,7 +155,7 @@ while true do
 	nixio.nanosleep(60)
 
 	if g.enabled == "1" then
-		os.execute(BIN .. "seiscomp --asroot check | grep -v 'already running'")
+		os.execute(BIN .. "seiscomp --asroot check | egrep -v '^Summary: | is already running$'")
 	end
 end
 

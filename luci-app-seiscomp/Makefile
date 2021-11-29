@@ -2,11 +2,11 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_VERSION:=2019.320
+PKG_VERSION:=2021.333
 PKG_RELEASE:=1
 
 LUCI_TITLE:=LuCI support for Seiscomp
-LUCI_DEPENDS:=+seiscomp +lua +libuci-lua +luci-lib-nixio +luasocket +luaexpat
+LUCI_DEPENDS:=+seiscomp +lua +libuci-lua +luci-lib-nixio +luasocket +luaexpat +luci-compat
 LUCI_PKGARCH:=all
 PKG_LICENSE:=GPLv2
 PKG_MAINTAINER:=Andres Heinloo <andres@gfz-potsdam.de>
