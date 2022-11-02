@@ -2,7 +2,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_VERSION:=2021.333
+PKG_VERSION:=2022.306
 PKG_RELEASE:=1
 
 LUCI_TITLE:=LuCI support for Seiscomp

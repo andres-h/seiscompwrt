@@ -1,7 +1,7 @@
 // (C) 2019 Andres Heinloo, Helmholtz-Zentrum Potsdam - Deutsches GeoForschungsZentrum GFZ
 
 function SeedlinkPlot(live, duration, pollInterval) {
-	var margin = {top: 20, right: 20, bottom: 50, left: 60}
+	var margin = {top: 20, right: 20, bottom: 50, left: 70}
 	var wp = seisplotjs_waveformplot
 	var timeWindow = wp.calcStartEndDates(null, null, duration)
 	var svgparent = wp.d3.select("#slplot")

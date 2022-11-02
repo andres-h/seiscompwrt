@@ -6,7 +6,7 @@ compile:
 
 install:
 	mkdir -p $(DESTDIR)/www/luci-static/resources/view/seiscomp
-	cp seisplotjs-waveformplot/*.js $(DESTDIR)/www/luci-static/resources/view/seiscomp/seisplotjs_waveformplot.js
+	sed -e 's/\.attr("transform-origin", "center center")//g' seisplotjs-waveformplot/*.js >$(DESTDIR)/www/luci-static/resources/view/seiscomp/seisplotjs_waveformplot.js
 
 clean:
 	rm -rf seisplotjs-waveformplot
