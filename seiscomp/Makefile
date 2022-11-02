@@ -3,14 +3,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seiscomp
-PKG_VERSION:=2021.333
+PKG_VERSION:=2022.306
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/SeisComP/seiscomp.git
 PKG_SOURCE_URL_SEEDLINK:=https://github.com/SeisComP/seedlink.git
-PKG_SOURCE_VERSION:=5847c14174ac3556162ac334251f596bcd31b404
-PKG_SOURCE_VERSION_SEEDLINK:=bc2e5a91cdae88c79a6aa5fac46a532b62a6534d
+PKG_SOURCE_VERSION:=8a7eb66c417375e4640a7c9437b7e8d0bd5dee47
+PKG_SOURCE_VERSION_SEEDLINK:=6379c57eef0066dc5425149c9b82ab95aa42a044
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=COPYING
@@ -28,7 +28,7 @@ define Package/seiscomp
   CATEGORY:=Seiscomp
   TITLE:=Seiscomp acquisition module
   URL:=https://www.seiscomp3.org
-  DEPENDS:=+libstdcpp +libpthread +librt +libxml2 +libopenssl +python3-light +bash +findutils-find +lua +libuci-lua +luci-lib-nixio
+  DEPENDS:=+libstdcpp +libpthread +librt +libxml2 +libopenssl +python3-light +bash +findutils-find +lua +libuci-lua +luci-lib-nixio +luasocket
 endef
 
 define Package/seiscomp/description
