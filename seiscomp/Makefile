@@ -3,7 +3,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=seiscomp
-PKG_VERSION:=2022.306
+PKG_VERSION:=2022.320
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -27,7 +27,7 @@ define Package/seiscomp
   SECTION:=applications
   CATEGORY:=Seiscomp
   TITLE:=Seiscomp acquisition module
-  URL:=https://www.seiscomp3.org
+  URL:=https://www.seiscomp.de
   DEPENDS:=+libstdcpp +libpthread +librt +libxml2 +libopenssl +python3-light +bash +findutils-find +lua +libuci-lua +luci-lib-nixio +luasocket
 endef
 
@@ -39,7 +39,6 @@ endef
 
 define Package/seiscomp/conffiles
 /etc/config/scgpio
-/etc/config/scsms
 /etc/config/seiscomp
 endef
 
@@ -59,7 +58,6 @@ define Package/seiscomp/install
 	$(INSTALL_BIN) ./files/scgpiod.init $(1)/etc/init.d/scgpiod
 	$(INSTALL_BIN) ./files/scwrtd.init $(1)/etc/init.d/scwrtd
 	$(INSTALL_CONF) ./files/scgpio.config $(1)/etc/config/scgpio
-	$(INSTALL_CONF) ./files/scsms.config $(1)/etc/config/scsms
 	$(INSTALL_CONF) ./files/seiscomp.config $(1)/etc/config/seiscomp
 endef
 
