@@ -30,6 +30,10 @@ setup_gpio() {
 		else
 			echo "high" >/sys/class/gpio/"$cfg"/direction
 		fi
+
+		if [ `cat /sys/class/gpio/"$cfg"/value` != "${init_state:=0}" ]; then
+			echo "${init_state:=0}" >/sys/class/gpio/"$cfg"/value
+		fi
 	fi
 }
 
