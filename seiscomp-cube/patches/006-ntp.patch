@@ -1,0 +1,105 @@
+--- a/app.cpp
++++ b/app.cpp
+@@ -360,6 +360,7 @@
+ 		"  -s, --serial=FILE           use the given device. By default /dev/ttyUSB0 will be used\n\n"
+ 		"Output:\n"
+ 		"  -m, --mode                  set the push-mode (available modes [0 = STDOUT|1 = SEEDLINK|2 = CAPS])\n"
++		"  -n, --ntp                   use system (NTP) time (implies raw SeedLink output)\n"
+ 		"  -d, --gps-file=FILE         file to push GPS position\n"
+ 		"  -t, --time-file=FILE        file to push time-difference information\n\n"
+ 		"Test:\n"
+@@ -487,6 +488,7 @@
+ 	_samplingRate = -1;
+ 	_dataHeader = 0;
+ 	_waitForGPS = true;
++	_ntp = false;
+ 
+ 	_argc = argc;
+ 	_argv = argv;
+@@ -586,6 +588,7 @@
+ 	{ "encoding",         required_argument, NULL, 'e' },
+ 	{ "offline-file",     required_argument, NULL, 'f' },
+ 	{ "mode",             required_argument, NULL, 'm' },
++	{ "ntp",              no_argument,       NULL, 'n' },
+ 	{ "time-file",        required_argument, NULL, 't' },
+ 	{ "serial",           required_argument, NULL, 's' },
+ 	{ "version",          no_argument,       NULL, 'V' },
+@@ -602,9 +605,9 @@
+ 
+ 	int c;
+ #if defined(__GNU_LIBRARY__) || defined(__GLIBC__) || 1
+-	while((c = getopt_long(_argc, _argv, "vc:d:De:f:i:m:t:s:SVhw", ops, NULL)) != EOF)
++	while((c = getopt_long(_argc, _argv, "vc:d:De:f:i:m:nt:s:SVhw", ops, NULL)) != EOF)
+ #else
+-	while((c = getopt(_argc, _argv, "vc:d:De:f:i:m:t:s:SVhw")) != EOF)
++	while((c = getopt(_argc, _argv, "vc:d:De:f:i:m:nt:s:SVhw")) != EOF)
+ #endif
+ 	{
+ 		switch(c) {
+@@ -616,6 +619,7 @@
+ 			case 'i': _pluginConfig = optarg; break;
+ 			case 'f': _offlineFile = optarg; _offline = true; break;
+ 			case 'm': _mode = atoi(optarg); break;
++			case 'n': _ntp = true; break;
+ 			case 't': _timeFile = optarg; break;
+ 			case 's': _deviceName = optarg;  break;
+ 			case 'S': _syncSystemTime = true; break;
+@@ -969,6 +973,26 @@
+ 		return false;
+ 	}
+ 
++	if ( _ntp ) {
++		Cube::Time currentTime = Cube::Time::GMT();
++		Cube::TimeSpan dtEst = Cube::TimeSpan(1.0 / double(_samplingRate));
++
++		if ( ! _timeEst.valid() ) {
++			// first sample, _timeEst not yet initialized
++			_timeEst = currentTime;
++		}
++		else {
++			const double decayMinutes = 1.0;
++			const double decay = 1.0 / (decayMinutes * 60.0 * double(_samplingRate));
++			// _timeEst is here still the estimated time of *previous* sample
++			Cube::TimeSpan dt = currentTime - _timeEst;
++			// ideally dt == dtEst, but if not, we adjust dtEst slowly
++			dtEst += Cube::TimeSpan(decay * (dt - dtEst).length());
++			// add dtEst to _timeEst to get the time of *current* sample
++			_timeEst += dtEst;
++		}
++	}
++
+ 	for ( int ch = 0; ch < _numberOfChannels; ch++ ) {
+ 		Stream *stream = _streams[ch];
+ 		if ( stream == NULL ) continue;
+@@ -986,6 +1010,18 @@
+ 		val = (val > (1<<23)-1)? val-(1<<24) : val;
+ 		//logging(LOG_DEBUG,"Value for Channel '%d': %8d", ch, val);
+ 
++		if ( _ntp ) {
++			if ( send_raw_depoch((stream->netcode + "." + stream->stacode).c_str(),
++					     stream->chacode.c_str(),
++					     double(_timeEst) - (double(_correction) / double(_samplingRate) + 0.01),
++					     0, 20, &val, 1) < 0) {
++				logging(LOG_ERR,"link to seedlink broken");
++				terminate_proc = 1;
++			}
++
++			continue;
++		}
++
+ 		if ( stream->sampleCount == stream->samples.size() ) {
+ 			stream->encodeSample();
+ 		}
+--- a/app.h
++++ b/app.h
+@@ -239,6 +239,10 @@
+ 		Store                  *_bufferStore;
+ 		FDBuf                  *_fdBuf;
+ 		StreamCodes             _streamCodes;
++
++		// NTP timing variables
++		bool                    _ntp;
++		Cube::Time              _timeEst;
+ };
+ 
+ }//end namespace CUBE

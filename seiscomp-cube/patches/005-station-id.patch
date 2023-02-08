@@ -1,0 +1,17 @@
+--- a/app.cpp
++++ b/app.cpp
+@@ -201,11 +201,11 @@
+ 	public:
+ 		virtual void publish_buffer(void *context, const char *station_id,
+ 		                            char *data, unsigned int size) {
+-			send_buffer(context, station_id, data, size);
+-			delete [] data;
+-
+ 			Stream* stream = (Stream*)context;
+ 
++			send_buffer(context, (stream->netcode + "." + stream->stacode).c_str(), data, size);
++			delete [] data;
++
+ 			int64_t step = stream->dtUs * stream->encoder->sample_count();
+ 			Cube::Time endTime =  stream->encoder->start_time() + Cube::TimeSpan(step/1000000,step%1000000);
+ 			logging(LOG_DEBUG, "%s.%s.%s: published record(%d Hz with %d %d samples %s~%s)",
