@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cube
 #PKG_VERSION:=2017.306
-PKG_RELEASE:=2019.263
+PKG_RELEASE:=2023.050
 
 PKG_SOURCE:=cube-plugin-2016-343.01-src.tar.gz
 PKG_SOURCE_URL:=https://geofon.gfz-potsdam.de/software/cube/
@@ -23,7 +23,7 @@ endef
 define Package/seiscomp-cube/description
   SeisComP is a seismological software for data acquisition, processing,
   distribution and interactive analysis. This package contains the plugin
-  for the cube digitizer.
+  for the DATA-CUBE digitizer.
 endef
 
 define Build/Prepare
@@ -37,6 +37,10 @@ endef
 define Package/seiscomp-cube/install
 	$(INSTALL_DIR) $(1)/opt/seiscomp/share/plugins/seedlink
 	$(CP) $(PKG_BUILD_DIR)/cube_plugin $(1)/opt/seiscomp/share/plugins/seedlink/
+	$(INSTALL_DIR) $(1)/opt/seiscomp/share/templates/seedlink/cube
+	$(CP) ./files/*.py ./files/*.tpl $(1)/opt/seiscomp/share/templates/seedlink/cube/
+	$(INSTALL_DIR) $(1)/opt/seiscomp/etc/descriptions
+	$(CP) ./files/*.xml $(1)/opt/seiscomp/etc/descriptions/
 endef
 
 $(eval $(call BuildPackage,seiscomp-cube))

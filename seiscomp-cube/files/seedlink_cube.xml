@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<seiscomp>
+	<binding module="seedlink" name="cube" category="sources">
+		<description>DATA-CUBE</description>
+		<configuration>
+			<parameter name="comport" type="string" default="/dev/data">
+				<description>
+					Serial port.
+				</description>
+			</parameter>
+			<parameter name="baudrate" type="int" default="19200">
+				<description>
+					Baud rate.
+				</description>
+			</parameter>
+			<parameter name="proc" type="string" default="auto">
+				<description>
+				Name of the proc object (defined in streams.xml); used for processing
+				raw streams (streams submitted by a plugin as raw samples).
+				</description>
+			</parameter>
+			<parameter name="gps_min_satellites" type="int" default="3">
+				<description>
+				Minimum number of GPS satellites.
+				</description>
+			</parameter>
+			<parameter name="gps_dump_interval" type="int" default="1">
+				<description>
+				Interval in seconds to write time/position log files (if enabled).
+				</description>
+			</parameter>
+			<parameter name="gps_init_timestamps" type="int" default="3">
+				<description>
+				Number of GPS timestamps to skip at start up.
+				</description>
+			</parameter>
+			<parameter name="max_jitter" type="int" default="-1">
+				<description>
+				Max jitter in microseconds between stream and GPS (-1 for no checks).
+				</description>
+			</parameter>
+			<parameter name="location" type="string" default="">
+				<description>
+				SEED location code.
+				</description>
+			</parameter>
+			<parameter name="stream" type="string" default="HH">
+				<description>
+				SEED band and instrument code.
+				</description>
+			</parameter>
+			<parameter name="channels" type="list:string" default="Z,N,E">
+				<description>
+				Channel mapping.
+				</description>
+			</parameter>
+			<parameter name="sample_rate" type="int" default="100">
+				<description>
+				Sample rate.
+				</description>
+			</parameter>
+			<parameter name="filter_delay" type="int" default="31">
+				<description>
+				Filter delay (in milliseconds / 10).
+				</description>
+			</parameter>
+			<parameter name="ntp" type="boolean" default="false">
+				<description>
+				Use system (NTP) time (no GPS timing).
+				</description>
+			</parameter>
+		</configuration>
+	</binding>
+</seiscomp>
