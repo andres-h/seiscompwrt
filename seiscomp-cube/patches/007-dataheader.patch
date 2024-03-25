@@ -1,0 +1,56 @@
+--- a/app.cpp	2024-03-25 17:31:36.283225664 +0100
++++ b/app.cpp	2024-03-25 17:43:23.393848989 +0100
+@@ -59,7 +59,7 @@
+ using namespace Utilities;
+ 
+ 
+-#define VERSION "2017.306"
++#define VERSION "2025.085"
+ 
+ #ifndef SEEDLINK_CONFIG_FILE
+ #define SEEDLINK_CONFIG_FILE "sampleconfig/plugins.ini"
+@@ -866,16 +866,17 @@
+ 						logging(LOG_INFO, "waiting for reliable GPS signal");
+ 						showLog = false;
+ 					}
+-
+-					if ( !syncHeaderByte() ) return;
+ 				}
++
++				if ( !syncHeaderByte() ) return;
++
+ 				break;
+ 			case 0x90:
+ 				_samplesRead++;
+ 				//logging(LOG_INFO,"processing PPS Block");
+ 				if ( !ignoreSample ) {
+ 					setPPSid();
+-					readSample();
++					if ( !readSample() ) return;
+ 				}
+ 				else if ( _gps.isValid() ) {
+ 					logging(LOG_INFO,"starting data acquisition");
+@@ -899,9 +900,10 @@
+ 						logging(LOG_INFO, "waiting for reliable GPS signal");
+ 						showLog = false;
+ 					}
+-
+-					if ( !syncHeaderByte() ) return;
+ 				}
++
++				if ( !syncHeaderByte() ) return;
++
+ 				break;
+ 			case 0xA0:
+ 				//logging(LOG_DEBUG,"processing GPS block");
+@@ -964,10 +966,6 @@
+ 
+ 	if ( terminate_proc ) return false;
+ 
+-	if ( data_counter > 0 ) {
+-		_dataHeader = _sensorBuf[data_counter];
+-	}
+-
+ 	if ( data_counter < _numberOfChannels * 4 ) {
+ 		logging(LOG_ERR,"expected sample block with %d bytes, got %d bytes", _numberOfChannels * 4, data_counter);
+ 		return false;
