@@ -1,11 +1,11 @@
---- a/app.cpp	2024-03-25 17:31:36.283225664 +0100
-+++ b/app.cpp	2024-03-25 17:43:23.393848989 +0100
+--- a/app.cpp
++++ b/app.cpp
 @@ -59,7 +59,7 @@
  using namespace Utilities;
  
  
 -#define VERSION "2017.306"
-+#define VERSION "2025.085"
++#define VERSION "2024.087"
  
  #ifndef SEEDLINK_CONFIG_FILE
  #define SEEDLINK_CONFIG_FILE "sampleconfig/plugins.ini"

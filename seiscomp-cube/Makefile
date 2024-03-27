@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cube
 #PKG_VERSION:=2017.306
-PKG_RELEASE:=2023.050
+PKG_RELEASE:=2024.087
 
 PKG_SOURCE:=cube-plugin-2016-343.01-src.tar.gz
 PKG_SOURCE_URL:=https://geofon.gfz-potsdam.de/software/cube/
