@@ -11,7 +11,7 @@
  trusted = 127.0.0.0/8
 --- a/src/base/seedlink/apps/seedlink/config/seedlink.py
 +++ b/src/base/seedlink/apps/seedlink/config/seedlink.py
-@@ -565,8 +565,8 @@
+@@ -567,8 +567,8 @@
          try: self._set_default("organization", self.env.getString("organization"), False)
          except: pass
  
@@ -44,11 +44,10 @@
  				</description>
 --- a/src/base/seedlink/apps/seedlink/iosystem.cc
 +++ b/src/base/seedlink/apps/seedlink/iosystem.cc
-@@ -2483,6 +2483,21 @@ void Connection::disconnect()
-     close(cx.clientfd);
+@@ -2498,6 +2498,21 @@
    }
-     
-+//*****************************************************************************
+ 
+ //*****************************************************************************
 +// NoLog
 +//*****************************************************************************
 +
@@ -63,13 +62,14 @@
 +      }
 +  };
 +
- //*****************************************************************************
++//*****************************************************************************
  // ConnectionManagerImpl
  //*****************************************************************************
-@@ -2680,8 +2695,12 @@ void ConnectionManagerImpl::client_connect()
+ 
+@@ -2694,8 +2709,12 @@
            }
        }
-     
+ 
 -    logs(LOG_NOTICE) << string(host) << ":" << port <<
 -      " : opening connection" << endl;
 +    Stream logs = make_stream(NoLog());
@@ -78,10 +78,10 @@
 +        logs = CPPStreams::logs.stream(string(host) + ":" + to_string(port) + " : ");
 +
 +    logs(LOG_NOTICE) << "opening connection" << endl;
-     
+ 
      int info_level;
      bool window_extraction;
-@@ -2703,9 +2722,7 @@ void ConnectionManagerImpl::client_connect()
+@@ -2717,9 +2736,7 @@
      // check for default_station == NULL (no stations registered)...
      rc_ptr<Connection> conn = new Connection(ipaddr, host, port,
        default_station, default_network_id, rlog, info_level,
