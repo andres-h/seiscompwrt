@@ -152,7 +152,7 @@ while true do
 	for _, g in ipairs(gpio) do
 		-- ignore g.revents, because not all gpios support interrupts
 
-		value = tonumber(g.fd:read(10)) or -1
+		local value = tonumber(g.fd:read(10)) or -1
 		g.fd:seek(0, "set")
 
 		if value ~= g.state then
